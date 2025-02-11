@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Chat from "./pages/Chat/Chat";
 import ProfileUpdate from "./pages/ProfileUpdate/ProfileUpdate";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
