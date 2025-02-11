@@ -115,6 +115,8 @@
 .sub-menu p {
   cursor: pointer;
   font-size: 14px;
+  text-decoration: none;
+  color: black;
 }
 
 .sub-menu p:hover {

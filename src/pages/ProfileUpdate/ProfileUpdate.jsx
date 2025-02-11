@@ -52,6 +52,7 @@ const ProfileUpdate = () => {
       const snap = await getDoc(docRef);
       setUserData(snap.data());
       navigate("/chat");
+      window.location.reload();
     } catch (error) {
       console.error(error);
       toast.error(error.message);
@@ -119,7 +120,13 @@ const ProfileUpdate = () => {
         </form>
         <img
           className="profile-pic"
-          src={image ? URL.createObjectURL(image) : assets.logo_icon}
+          src={
+            image
+              ? URL.createObjectURL(image)
+              : prevImage
+              ? prevImage
+              : assets.logo_icon
+          }
           alt="Profile"
         />
       </div>

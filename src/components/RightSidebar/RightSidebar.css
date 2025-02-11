@@ -65,7 +65,7 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: #077eff;
+  background: red;
   color: white;
   border: none;
   font-size: 12px;
@@ -89,4 +89,5 @@
   border-radius: 20px;
   cursor: pointer;
   text-decoration: none;
+  margin-bottom: 10px;
 }

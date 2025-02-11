@@ -29,10 +29,12 @@ const RightSidebar = () => {
           <img src={assets.pic2} alt="" />
         </div>
       </div>
-      <button onClick={() => logout()}>Logout</button>
-      <a href="/profile" className="profile-button" onClick={goToProfile}>
-        Profile
-      </a>
+      <div className="rs-buttons">
+        <button onClick={() => logout()}>Logout</button>
+        <a href="/profile" className="profile-button" onClick={goToProfile}>
+          Profile
+        </a>
+      </div>
     </div>
   );
 };

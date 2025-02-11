@@ -1,7 +1,7 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { db } from "../config/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 
 export const AppContext = createContext();
 
@@ -30,6 +30,29 @@ const AppContextProvider = (props) => {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (userData) {
+      const chatRef = doc(db, "chats", userData.uid);
+      const unSub = onSnapshot(chatRef, async (res) => {
+        const chatData = res.data();
+        if (chatData && chatData.chatsData) {
+          const chatItems = chatData.chatsData;
+          const tempData = [];
+          for (const item of chatItems) {
+            const userRef = doc(db, "users", item.rId);
+            const userSnap = await getDoc(userRef);
+            const userData = userSnap.data();
+            tempData.push({ ...item, userData });
+          }
+          setChatData(tempData.sort((a, b) => b.updatedAt - a.updatedAt));
+        }
+      });
+      return () => {
+        unSub();
+      };
+    }
+  }, [userData]);
 
   const value = {
     userData,
