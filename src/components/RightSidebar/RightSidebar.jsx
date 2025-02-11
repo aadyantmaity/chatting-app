@@ -1,8 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./RightSidebar.css";
 import assets from "../../assets/assets.js";
+import { logout } from "../../config/firebase.js";
 
 const RightSidebar = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="rs">
       <div className="rs-profile">
@@ -24,7 +28,7 @@ const RightSidebar = () => {
           <img src={assets.pic2} alt="" />
         </div>
       </div>
-      <button>Logout</button>
+      <button onClick={() => logout(navigate)}>Logout</button>
     </div>
   );
 };
