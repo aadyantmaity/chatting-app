@@ -8,6 +8,8 @@ import { auth, db } from "../../config/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import upload from "../../lib/upload";
+import { AppContext } from "../../context/AppContext";
+import { useContext } from "react";
 
 const ProfileUpdate = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ const ProfileUpdate = () => {
   const [uid, setUid] = useState("");
   const [prevImage, setPrevImage] = useState("");
   const [loading, setLoading] = useState(true);
+  const { setUserData } = useContext(AppContext);
 
   const profileUpdate = async (event) => {
     event.preventDefault();
@@ -45,9 +48,13 @@ const ProfileUpdate = () => {
           name: name,
         });
       }
+
+      const snap = await getDoc(docRef);
+      setUserData(snap.data());
+      navigate("/chat");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update profile");
+      toast.error(error.message);
     }
   };
 

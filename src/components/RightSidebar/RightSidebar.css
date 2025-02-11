@@ -77,7 +77,7 @@
 
 .rs .profile-button {
   position: absolute;
-  bottom: 60px; /* Adjusted to place above the logout button */
+  bottom: 60px;
   left: 50%;
   transform: translateX(-50%);
   background: #077eff;
@@ -88,4 +88,5 @@
   padding: 10px 65px;
   border-radius: 20px;
   cursor: pointer;
+  text-decoration: none;
 }
