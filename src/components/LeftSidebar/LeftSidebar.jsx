@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import "./LeftSidebar.css";
 import assets from "../../assets/assets.js";
 import { logout } from "../../config/firebase.js";
@@ -13,6 +13,7 @@ import {
   where,
   setDoc,
   arrayUnion,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { AppContext } from "../../context/AppContext.jsx";
@@ -102,6 +103,20 @@ const LeftSidebar = () => {
           messageSeen: true,
         }),
       });
+
+      const uSnap = getDoc(doc(db, "users", user.id));
+      const uData = uSnap.data();
+
+      setChat({
+        messageId: newMessageRef.id,
+        lastMessage: "",
+        rId: user.id,
+        updatedAt: Date.now(),
+        messageSeen: true,
+        userData: uData,
+      });
+
+      setShowSearch(false);
     } catch (error) {
       toast.error(error.message);
       console.error(error);
@@ -112,6 +127,20 @@ const LeftSidebar = () => {
     setMessagesId(item.messageId);
     setChatUser(item);
   };
+
+  useEffect(() => {
+    const updateChatUserData = async () => {
+      const chatUser = chatData.find((chat) => chat.messageId === messagesId);
+      if (chatUser) {
+        const userRef = doc(db, "users", chatUser.userData.id);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data();
+        setChatUser((prev) => ({ ...prev, userData: userData }));
+      }
+    };
+
+    updateChatUserData();
+  }, [chatData, messagesId, setChatUser]);
 
   return (
     <div className="ls">

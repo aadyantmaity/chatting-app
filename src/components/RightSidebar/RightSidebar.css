@@ -59,3 +59,24 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.rs button {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: red;
+  color: white;
+  border: none;
+  font-size: 12px;
+  font-weight: 300;
+  padding: 10px 50px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .rs {
+    display: none;
+  }
+}

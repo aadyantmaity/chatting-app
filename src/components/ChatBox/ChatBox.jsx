@@ -24,6 +24,7 @@ const ChatBox = () => {
 
   const sendMessage = async () => {
     try {
+      setInput("");
       if (input && messagesId) {
         await updateDoc(doc(db, "messages", messagesId), {
           messages: arrayUnion({
@@ -58,8 +59,6 @@ const ChatBox = () => {
     } catch (error) {
       toast.error(error.message);
     }
-
-    setInput("");
   };
 
   const sendImage = async (e) => {
@@ -138,8 +137,12 @@ const ChatBox = () => {
       <div className="chat-user">
         <img src={chatUser.userData.avatar} alt="" />
         <p>
-          {chatUser.userData.name}{" "}
-          <img className="dot" src={assets.green_dot} alt="" />
+          <p>
+            {chatUser.userData.name}
+            {Date.now() - chatUser.userData.lastSeen <= 700000 ? (
+              <img className="dot" src={assets.green_dot} alt="" />
+            ) : null}
+          </p>
         </p>
         <img src={assets.help_icon} className="help" alt="" />
       </div>

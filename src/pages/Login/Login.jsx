@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Login.css";
 import assets from "../../assets/assets.js";
-import { signup, login } from "../../config/firebase";
+import { signup, login, resetPass } from "../../config/firebase";
 
 const Login = () => {
   const [currState, setCurrState] = useState("Sign up");
@@ -53,10 +53,6 @@ const Login = () => {
         <button className="submit">
           {currState === "Sign up" ? "Create account" : "Login now"}
         </button>
-        <div className="login-term">
-          <input type="checkbox" />
-          <p>Agree to the terms of use & privacy policy.</p>
-        </div>
         <div className="login-forgot">
           {currState === "Sign up" ? (
             <p className="login-toggle">
@@ -65,10 +61,17 @@ const Login = () => {
             </p>
           ) : (
             <p className="login-toggle">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <span onClick={() => setCurrState("Sign up")}>Click here</span>{" "}
             </p>
           )}
+
+          {currState === "Login" ? (
+            <p className="login-toggle">
+              Forgot Password{" "}
+              <span onClick={() => resetPass(email)}>Reset</span>{" "}
+            </p>
+          ) : null}
         </div>
       </form>
     </div>

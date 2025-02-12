@@ -1,28 +1,58 @@
 import "./RightSidebar.css";
 import assets from "../../assets/assets.js";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../context/AppContext.jsx";
+import { logout } from "../../config/firebase.js";
 
 const RightSidebar = () => {
-  return (
+  const { chatUser, messages } = useContext(AppContext);
+  const [msgImages, setMsgImages] = useState([]);
+
+  useEffect(() => {
+    let tempVar = [];
+    messages.map((msg) => {
+      if (msg.image) {
+        tempVar.push(msg.image);
+      }
+    });
+    setMsgImages(tempVar);
+  }, [messages]);
+
+  return chatUser ? (
     <div className="rs">
       <div className="rs-profile">
-        <img src={assets.profile_img} alt="" />
+        <img src={chatUser.userData.avatar} alt="" />
         <h3>
-          Richard Sanford <img src={assets.green_dot} className="dot" alt="" />
+          {chatUser.userData.name}{" "}
+          {Date.now() - chatUser.userData.lastSeen <= 700000 ? (
+            <img className="dot" src={assets.green_dot} alt="" />
+          ) : null}
         </h3>
-        <p>Hey, I am using chatapp</p>
+        <p>{chatUser.userData.bio}</p>
       </div>
       <hr />
       <div className="rs-media">
         <p>Media</p>
         <div>
-          <img src={assets.pic1} alt="" />
-          <img src={assets.pic2} alt="" />
-          <img src={assets.pic3} alt="" />
-          <img src={assets.pic4} alt="" />
-          <img src={assets.pic1} alt="" />
-          <img src={assets.pic2} alt="" />
+          {msgImages.map((url, index) => (
+            <img
+              src={url}
+              key={index}
+              onClick={() => window.open(url)}
+              alt=""
+            />
+          ))}
         </div>
       </div>
+      <button className="logout" onClick={() => logout()}>
+        Logout
+      </button>
+    </div>
+  ) : (
+    <div className="rs">
+      <button className="logout" onClick={() => logout()}>
+        Logout
+      </button>
     </div>
   );
 };
