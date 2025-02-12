@@ -137,3 +137,7 @@
   font-weight: 500;
   color: #383838;
 }
+
+.unseen-message {
+  outline: 2px solid green;
+}

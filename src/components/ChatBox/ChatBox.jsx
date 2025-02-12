@@ -7,12 +7,20 @@ import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase.js";
 import { onSnapshot } from "firebase/firestore";
 import { toast } from "react-toastify";
+import upload from "../../lib/upload.js";
 
 const ChatBox = () => {
   const { userData, messagesId, chatUser, messages, setMessages } =
     useContext(AppContext);
 
   const [input, setInput] = useState("");
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("chatReloaded")) {
+      sessionStorage.setItem("chatReloaded", "true");
+      window.location.reload();
+    }
+  }, []);
 
   const sendMessage = async () => {
     try {
@@ -52,6 +60,47 @@ const ChatBox = () => {
     }
 
     setInput("");
+  };
+
+  const sendImage = async (e) => {
+    try {
+      const fileUrl = await upload(e.target.files[0]);
+
+      if (fileUrl && messagesId) {
+        await updateDoc(doc(db, "messages", messagesId), {
+          messages: arrayUnion({
+            sId: userData.id,
+            image: fileUrl,
+            createdAt: new Date(),
+          }),
+        });
+
+        const userIDs = [chatUser.rid, userData.id];
+
+        userIDs.forEach(async (id) => {
+          const userChatsRef = doc(db, "chats", id);
+          const userChatsSnapshot = await getDoc(userChatsRef);
+
+          if (userChatsSnapshot.exists()) {
+            const userChatData = userChatsSnapshot.data();
+            const chatIndex = userChatData.chatsData.findIndex(
+              (c) => c.messageId === messagesId
+            );
+            userChatData.chatsData[chatIndex].lastMessage = "Image";
+            userChatData.chatsData[chatIndex].updatedAt = Date.now();
+            if (userChatData.chatsData[chatIndex].rId === userData.id) {
+              userChatData.chatsData[chatIndex].messageSeen = false;
+            }
+
+            await updateDoc(userChatsRef, {
+              chatsData: userChatData.chatsData,
+            });
+          }
+        });
+      }
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   const convertTimestamp = (timestamp) => {
@@ -101,7 +150,12 @@ const ChatBox = () => {
             key={index}
             className={msg.sId === userData.id ? "s-msg" : "r-msg"}
           >
-            <p className="msg">{msg.text}</p>
+            {msg["image"] ? (
+              <img className="msg-img" src={msg.image} alt="" />
+            ) : (
+              <p className="msg">{msg.text}</p>
+            )}
+
             <div>
               <img
                 src={
@@ -126,7 +180,13 @@ const ChatBox = () => {
           type="text"
           placeholder="Send a message"
         />
-        <input type="file" id="image" accept="image/png, image/jpeg" hidden />
+        <input
+          onChange={sendImage}
+          type="file"
+          id="image"
+          accept="image/png, image/jpeg"
+          hidden
+        />
         <label htmlFor="image">
           <img src={assets.gallery_icon} alt="" />
         </label>
