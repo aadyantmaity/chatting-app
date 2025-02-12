@@ -8,15 +8,18 @@ export const AppContext = createContext();
 const AppContextProvider = (props) => {
   const [userData, setUserData] = useState(null);
   const [chatData, setChatData] = useState(null);
+  const [messagesId, setMessagesId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [chatUser, setChatUser] = useState(null);
 
   const loadUserData = async (uid) => {
     try {
-      const userRef = doc(db, "users", uid); // ✅ FIX: Corrected `doc()` usage
+      const userRef = doc(db, "users", uid);
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
         const userData = userSnap.data();
-        setUserData(userData); // ✅ FIX: Set userData so components can access it
+        setUserData(userData);
 
         await updateDoc(userRef, {
           lastSeen: Date.now(),
@@ -35,7 +38,6 @@ const AppContextProvider = (props) => {
 
   useEffect(() => {
     if (userData && userData.id) {
-      // ✅ FIX: Check `userData.id`
       const chatRef = doc(db, "chats", userData.id);
       const unSub = onSnapshot(chatRef, async (res) => {
         const chatData = res.data();
@@ -63,6 +65,12 @@ const AppContextProvider = (props) => {
     chatData,
     setChatData,
     loadUserData,
+    messages,
+    setMessages,
+    messagesId,
+    setMessagesId,
+    chatUser,
+    setChatUser,
   };
 
   return (

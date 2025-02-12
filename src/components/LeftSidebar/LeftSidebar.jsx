@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import "./LeftSidebar.css";
 import assets from "../../assets/assets.js";
 import { logout } from "../../config/firebase.js";
@@ -20,7 +20,8 @@ import { toast } from "react-toastify";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
-  const { userData, chatData } = useContext(AppContext);
+  const { userData, chatData, setChatUser, setMessagesId, messagesId } =
+    useContext(AppContext);
   const [user, setUser] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
 
@@ -30,7 +31,7 @@ const LeftSidebar = () => {
       if (input) {
         setShowSearch(true);
         if (input === userData?.username?.toLowerCase()) {
-          setUser(null); // Prevent searching for self
+          setUser(null);
           return;
         }
 
@@ -107,6 +108,11 @@ const LeftSidebar = () => {
     }
   };
 
+  const setChat = async (item) => {
+    setMessagesId(item.messageId);
+    setChatUser(item);
+  };
+
   return (
     <div className="ls">
       <div className="ls-top">
@@ -138,7 +144,7 @@ const LeftSidebar = () => {
           </div>
         ) : (
           (chatData || []).map((item, index) => (
-            <div key={index} className="friends">
+            <div onClick={() => setChat(item)} key={index} className="friends">
               <img src={item.userData.avatar} alt="" />
               <div>
                 <p>{item.userData.name}</p>
