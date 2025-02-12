@@ -1,22 +1,110 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import "./LeftSidebar.css";
 import assets from "../../assets/assets.js";
 import { logout } from "../../config/firebase.js";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+  setDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { db } from "../../config/firebase";
+import { AppContext } from "../../context/AppContext.jsx";
+import { toast } from "react-toastify";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
+  const { userData, chatData } = useContext(AppContext);
+  const [user, setUser] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
+
   const inputHandler = async (e) => {
     try {
-      const input = e.target.value;
-      const userRef = collection(db, "users");
-      const q = query(userRef, where("username", "==", input.toLowerCase()));
-      const querySnap = await getDocs(q);
-      if (!querySnap.empty) {
-        console.log(querySnap.docs[0].data());
+      const input = e.target.value.trim().toLowerCase();
+      if (input) {
+        setShowSearch(true);
+        if (input === userData?.username?.toLowerCase()) {
+          setUser(null); // Prevent searching for self
+          return;
+        }
+
+        const userRef = collection(db, "users");
+        const q = query(userRef, where("username", "==", input));
+        const querySnap = await getDocs(q);
+
+        if (!querySnap.empty) {
+          let userExist = false;
+          chatData.forEach((user) => {
+            if (user.rId === querySnap.docs[0].data().id) {
+              userExist = true;
+            }
+          });
+
+          if (!userExist) {
+            setUser(querySnap.docs[0].data());
+          }
+        } else {
+          setUser(null);
+        }
+      } else {
+        setShowSearch(false);
+        setUser(null);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addChat = async () => {
+    if (!user) {
+      toast.error("User not found");
+      return;
+    }
+
+    if (!userData || !userData.id) {
+      toast.error("User data is not available");
+      return;
+    }
+
+    const messagesRef = collection(db, "messages");
+    const chatsRef = collection(db, "chats");
+
+    try {
+      const newMessageRef = doc(messagesRef);
+      await setDoc(newMessageRef, {
+        createdAt: serverTimestamp(),
+        messages: [],
+      });
+
+      await updateDoc(doc(chatsRef, user.id), {
+        chatsData: arrayUnion({
+          messageId: newMessageRef.id,
+          lastMessage: "",
+          rId: userData.id,
+          updatedAt: Date.now(),
+          messageSeen: true,
+        }),
+      });
+
+      await updateDoc(doc(chatsRef, userData.id), {
+        chatsData: arrayUnion({
+          messageId: newMessageRef.id,
+          lastMessage: "",
+          rId: user.id,
+          updatedAt: Date.now(),
+          messageSeen: true,
+        }),
+      });
+    } catch (error) {
+      toast.error(error.message);
+      console.error(error);
+    }
   };
 
   return (
@@ -43,17 +131,22 @@ const LeftSidebar = () => {
         </div>
       </div>
       <div className="ls-list">
-        {Array(12)
-          .fill("")
-          .map((item, index) => (
+        {showSearch && user ? (
+          <div onClick={addChat} className="friends add-user">
+            <img src={user.avatar || assets.profile_img} alt="" />
+            <p>{user.name}</p>
+          </div>
+        ) : (
+          (chatData || []).map((item, index) => (
             <div key={index} className="friends">
-              <img src={assets.profile_img} alt="" />
+              <img src={item.userData.avatar} alt="" />
               <div>
-                <p>Richard Sanford</p>
-                <span>Hello, How are you?</span>
+                <p>{item.userData.name}</p>
+                <span>{item.lastMessage}</span>
               </div>
             </div>
-          ))}
+          ))
+        )}
       </div>
     </div>
   );
