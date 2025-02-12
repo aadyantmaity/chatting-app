@@ -130,7 +130,7 @@ const ChatBox = () => {
         unSub();
       };
     }
-  }, [messagesId]);
+  }, [messagesId, setMessages]);
 
   return chatUser ? (
     <div className="chat-box">
