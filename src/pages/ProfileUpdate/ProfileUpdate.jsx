@@ -24,11 +24,6 @@ const ProfileUpdate = () => {
   const profileUpdate = async (event) => {
     event.preventDefault();
     try {
-      if (!prevImage && !image) {
-        toast.error("Please upload a profile image");
-        return;
-      }
-
       const docRef = doc(db, "users", uid);
       if (image) {
         const imgUrl = await upload(image);
