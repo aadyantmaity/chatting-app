@@ -104,7 +104,7 @@ const LeftSidebar = () => {
         }),
       });
 
-      const uSnap = getDoc(doc(db, "users", user.id));
+      const uSnap = await getDoc(doc(db, "users", user.id));
       const uData = uSnap.data();
 
       setChat({
