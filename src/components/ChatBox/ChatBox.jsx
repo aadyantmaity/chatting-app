@@ -179,6 +179,11 @@ const ChatBox = () => {
           onChange={(e) => {
             setInput(e.target.value);
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              sendMessage();
+            }
+          }}
           value={input}
           type="text"
           placeholder="Send a message"
