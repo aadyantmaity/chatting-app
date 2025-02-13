@@ -10,13 +10,10 @@ import { auth } from "./config/firebase";
 import { AppContext } from "./context/AppContext";
 
 const App = () => {
-  /*
   const navigate = useNavigate();
   const location = useLocation();
   const { loadUserData } = useContext(AppContext);
-  */
 
-  /*
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -29,7 +26,6 @@ const App = () => {
       }
     });
   }, [loadUserData, navigate, location.pathname]);
-  */
 
   return (
     <>
