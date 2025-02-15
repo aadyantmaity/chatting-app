@@ -47,6 +47,7 @@ const signup = async (username, email, password) => {
     await setDoc(doc(db, "chats", user.uid), {
       chatsData: [],
     });
+    navigate("/chat");
   } catch (error) {
     console.error(error);
     toast.error(error.code.split("/")[1].split("-").join(" "));
@@ -56,6 +57,7 @@ const signup = async (username, email, password) => {
 const login = async (email, password) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
+    navigate("/chat");
   } catch (error) {
     console.error(error);
     toast.error(error.code.split("/")[1].split("-").join(" "));
