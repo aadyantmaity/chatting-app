@@ -2,8 +2,10 @@ import { useState } from "react";
 import "./Login.css";
 import assets from "../../assets/assets.js";
 import { signup, login, resetPass } from "../../config/firebase";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate(); // Get navigate function
   const [currState, setCurrState] = useState("Sign up");
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
@@ -12,9 +14,9 @@ const Login = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
     if (currState === "Sign up") {
-      signup(userName, email, password);
+      signup(userName, email, password, navigate);
     } else {
-      login(email, password);
+      login(email, password, navigate);
     }
   };
 
