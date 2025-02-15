@@ -31,7 +31,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const signup = async (username, email, password) => {
+const signup = async (username, email, password, navigate) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
@@ -54,7 +54,7 @@ const signup = async (username, email, password) => {
   }
 };
 
-const login = async (email, password) => {
+const login = async (email, password, navigate) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
     navigate("/chat");
@@ -63,6 +63,7 @@ const login = async (email, password) => {
     toast.error(error.code.split("/")[1].split("-").join(" "));
   }
 };
+
 
 const logout = async (navigate) => {
   try {
